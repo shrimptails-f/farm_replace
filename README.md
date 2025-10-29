@@ -1,6 +1,6 @@
 # プロジェクト概要
 
-本リポジトリは Farm Replace のリポジトリです。
+本リポジトリは Farm Replace のリポジトリです。  
 https://store.steampowered.com/app/2060160/_Replace/
 
 ## 使用技術
