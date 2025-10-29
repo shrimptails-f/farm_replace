@@ -1,0 +1,7 @@
+.gitconfig
+.mypy_cache
+__builtins__.py
+save.json
+Save0.json
+.env
+*:Zone.Identifier

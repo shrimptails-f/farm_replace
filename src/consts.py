@@ -1,0 +1,31 @@
+# 所持数関連
+CARROT = 30000
+HAY = 30000
+WOOD = 30000
+PUMPKIN = 20000
+POWER = 50
+CACTUS = 20000
+
+# コスト関連 基本変えない。
+# 人参を植えるコスト
+CARROT_COST_HAY = 2
+CARROT_COST_WOOD = 2
+# ひまわりを植えるコスト
+POWER_COST_CARROT = 1
+# かぼちゃを植えるコスト
+PUMPKIN_COST_CARROT = 1
+# サボテンを植えるコスト
+CACTUS_COST_PUMPKIN = 2
+
+CACTUS_LOWER_LIMIT = 4
+CACTUS_UP_LIMIT = 7
+CACTUS_RIGHT_LIMIT = 3
+
+# 作物ごとの植える数を設定します
+LIMIT_PLANT_COUNT = {}
+LIMIT_PLANT_COUNT["Pumpkin"] = 16
+LIMIT_PLANT_COUNT["Cactus"] = 16
+LIMIT_PLANT_COUNT["Tree"] = 50  # include Bush
+LIMIT_PLANT_COUNT["Sunflower"] = 10
+LIMIT_PLANT_COUNT["Carrot"] = 30
+LIMIT_PLANT_COUNT["Grass"] = 20

@@ -1,0 +1,16 @@
+version: "3"
+services:
+  python:
+    build:
+      context: ../
+      dockerfile: .devcontainer/infra/python/Dockerfile
+    env_file:
+      - .env
+    tty: true
+    volumes:
+      - ../:/data
+      # WSL環境で構築しているのでちょっと変わったマウントをする。
+      - type: bind
+        source: ${FILE_PATH}
+        target: /data/src
+      - ~/.gitconfig:/data/.gitconfig
