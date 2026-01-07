@@ -2,7 +2,7 @@
     "name": "Farm Replace",
     "dockerComposeFile": "docker-compose.yml",
     "service": "python",
-    "workspaceFolder": "/data",
+    "workspaceFolder": "/home/dev/data",
     "postCreateCommand": "task setup",
     "customizations": {
         "vscode": {

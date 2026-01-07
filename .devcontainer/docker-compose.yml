@@ -8,9 +8,9 @@ services:
       - .env
     tty: true
     volumes:
-      - ../:/data
+      - ../:/home/dev/data
       # WSL環境で構築しているのでちょっと変わったマウントをする。
       - type: bind
         source: ${FILE_PATH}
-        target: /data/src
+        target: /home/dev/data/src
       - ~/.gitconfig:/data/.gitconfig

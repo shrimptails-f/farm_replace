@@ -1,5 +1,4 @@
-# syntax=docker/dockerfile:1
-FROM python:3.9-bookworm AS base
+FROM python:3.14-bookworm AS base
 
 # 環境変数とタイムゾーンの設定
 ENV TZ=Asia/Tokyo
@@ -43,6 +42,8 @@ RUN --mount=type=cache,target=/tmp/task \
 
 # 最終ステージ
 FROM base AS final
+ENV APP_ROOT /home/dev/data
+
 # Node.js をインストール
 RUN --mount=type=cache,target=/var/cache/apt \
     --mount=type=cache,target=/var/lib/apt \
@@ -55,20 +56,48 @@ RUN --mount=type=cache,target=/root/.npm \
 
 # Python toolsをコピー
 COPY --from=python-tools /usr/local/bin /usr/local/bin
-COPY --from=python-tools /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
-
+COPY --from=python-tools /usr/local/lib/python3.14/site-packages /usr/local/lib/python3.14/site-packages
 
 # Task Runnerをコピー
 COPY --from=task-runner /usr/local/bin/task /usr/local/bin/task
 
-# PATHの設定
-ENV PATH="/usr/local/bin:$PATH"
-
-# bashrcのコピー
-COPY .devcontainer/infra/python/.bashrc /root/.bashrc
-
 # SSH keychain設定
 RUN eval `keychain --eval --agents ssh id_rsa`
 
-ENV APP_ROOT /data
+RUN curl -LsSf https://astral.sh/uv/install.sh | env UV_INSTALL_DIR=/usr/local/bin sh
+RUN mkdir -p /home/dev/.codex
+
+# Node.js (v22) インストール
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
+    apt-get update && \
+    apt-get install -y nodejs && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+# Codexを公式ガイド通りにグローバルインストール
+RUN npm i -g @openai/codex
+
+RUN mkdir -p $APP_ROOT
+# 開発ユーザー作成
+RUN groupadd -g 1000 dev && \
+    useradd -m -u 1000 -g dev -s /bin/bash dev && \
+    chown -R dev:dev /home/dev
+
+# VS Code Server 用ディレクトリ
+# VS Code Server 用のディレクトリを事前に作成して権限を設定
+RUN mkdir -p /home/dev/.vscode-server/bin /home/dev/.vscode-server/extensions && \
+    chown -R dev:dev /home/dev/.vscode-server
+
+
 WORKDIR $APP_ROOT
+
+USER dev
+
+# bashrcのコピー
+COPY --chown=dev:dev .devcontainer/infra/python/.bashrc /home/dev/.bashrc
+
+# Claude Code インストール
+RUN curl -fsSL https://claude.ai/install.sh | bash && \
+    echo 'export PATH="$HOME/.local/bin:$PATH"' >> /home/dev/.bashrc && \
+    echo 'eval `keychain --eval --agents ssh id_rsa 2>/dev/null`' >> /home/dev/.bashrc
+
+ENV PATH="/home/dev/.local/bin:${PATH}"
