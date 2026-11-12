@@ -2,6 +2,7 @@
     "name": "Farm Replace",
     "dockerComposeFile": "docker-compose.yml",
     "service": "python",
+    "remoteUser": "dev",
     "workspaceFolder": "/home/dev/data",
     "postCreateCommand": "task setup",
     "customizations": {
@@ -11,6 +12,7 @@
                 "ms-azuretools.vscode-docker", // VsCodeでのIntelliSenseやタブ補完用
                 "streetsidesoftware.code-spell-checker", // スペルチェック
                 "saoudrizwan.claude-dev", // AIコーディングサポート
+                "ms-python.python", // ゲームの Python 風コードを編集
                 "ms-python.flake8", // Lint
                 // "ms-python.mypy-type-checker", // 型チェック
                 "ms-python.black-formatter", // フォーマッタ

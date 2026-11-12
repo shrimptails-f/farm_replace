@@ -1,4 +1,3 @@
-version: "3"
 services:
   python:
     build:
@@ -6,11 +5,17 @@ services:
       dockerfile: .devcontainer/infra/python/Dockerfile
     env_file:
       - .env
+    init: true
     tty: true
     volumes:
       - ../:/home/dev/data
-      # WSL環境で構築しているのでちょっと変わったマウントをする。
+      # ゲームのセーブフォルダーを直接編集する（存在しないパスは作成しない）。
       - type: bind
         source: ${FILE_PATH}
         target: /home/dev/data/src
-      - ~/.gitconfig:/data/.gitconfig
+        bind:
+          create_host_path: false
+      - ${HOME}/.gitconfig:/data/.gitconfig:ro
+      - ${HOME}/.codex:/home/dev/.codex
+      - ${HOME}/.claude:/home/dev/.claude
+      - ${HOME}/.config/gh:/home/dev/.config/gh:ro

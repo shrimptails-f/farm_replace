@@ -6,7 +6,7 @@ tasks:
   setup:
     desc: "ローカル環境のセットアップを行う。(gitコマンドが使用できるようにする)"
     cmds:
-      - cp {{.APP_ROOT}}/.gitconfig /home/dev/.gitconfig
+      - cp /data/.gitconfig /home/dev/.gitconfig
       - git config --global core.autocrlf input
       - git config --global --add safe.directory {{.APP_ROOT}}
       # - chmod +x {{.APP_ROOT}}/.github/hooks/pre-commit
@@ -18,5 +18,12 @@ tasks:
 
   codex:
     desc: "codexに権限をあたえて、コマンド確認させずに実行します。DevContainer(ガードレール付環境)内でのみ実行してください。"
+    interactive: true
     cmds:
-      - codex --dangerously-bypass-approvals-and-sandbox
+      - codex --no-daemon --dangerously-bypass-approvals-and-sandbox
+
+  claude:
+    desc: "Claude Code を起動します。Dev Container 内で使用してください。"
+    interactive: true
+    cmds:
+      - claude --dangerously-skip-permissions

@@ -18,7 +18,9 @@ RUN --mount=type=cache,target=/var/cache/apt \
     git \
     keychain \
     curl \
-    less && \
+    less \
+    ripgrep \
+    gh && \
     localedef -i ja_JP -c -f UTF-8 -A /usr/share/locale/locale.alias ja_JP.UTF-8
 
 # Python tools インストール
@@ -37,17 +39,15 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 # Task Runner インストール
 FROM base AS task-runner
 RUN --mount=type=cache,target=/tmp/task \
-    curl -sL "https://github.com/go-task/task/releases/download/v3.9.0/task_linux_amd64.deb" -o /tmp/task/task.deb && \
+    curl -sL "https://github.com/go-task/task/releases/download/v3.45.4/task_linux_$(dpkg --print-architecture).deb" -o /tmp/task/task.deb && \
     dpkg -i /tmp/task/task.deb
 
 # 最終ステージ
 FROM base AS final
 ENV APP_ROOT /home/dev/data
 
-# Node.js をインストール
-RUN --mount=type=cache,target=/var/cache/apt \
-    --mount=type=cache,target=/var/lib/apt \
-    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+# Node.js は Codex と Serverless Framework で共用する
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
     apt-get install -y nodejs
 
 # Serverless Framework をインストール
@@ -59,20 +59,10 @@ COPY --from=python-tools /usr/local/bin /usr/local/bin
 COPY --from=python-tools /usr/local/lib/python3.14/site-packages /usr/local/lib/python3.14/site-packages
 
 # Task Runnerをコピー
-COPY --from=task-runner /usr/local/bin/task /usr/local/bin/task
-
-# SSH keychain設定
-RUN eval `keychain --eval --agents ssh id_rsa`
+COPY --from=task-runner /usr/bin/task /usr/local/bin/task
 
 RUN curl -LsSf https://astral.sh/uv/install.sh | env UV_INSTALL_DIR=/usr/local/bin sh
-RUN mkdir -p /home/dev/.codex
 
-# Node.js (v22) インストール
-RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
-    apt-get update && \
-    apt-get install -y nodejs && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
 # Codexを公式ガイド通りにグローバルインストール
 RUN npm i -g @openai/codex
 
